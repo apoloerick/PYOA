@@ -6,25 +6,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var path = require("path");
 var mysql = require('mysql');
-
-// ==============================================================================
-// DATABASE CONNECTION
-// Creates a connection to a database.
-// ==============================================================================
-var connection = mysql.createConnection({
-    host: "enqhzd10cxh7hv2e.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
-    user: "llfc3e6v9v1r2jg4",
-    password: "i779uifhwa66q8m5",
-    database: "vuu63uuadz03ycq5"
-});
-
-connection.connect(function(err) {
-    if (err) {
-        console.error('error connecting: ' + err.stack);
-        return;
-    }
-    console.log('connected as id ' + connection.threadId);
-});
+var orm = require('/config/orm.js');
 
 // ==============================================================================
 // EXPRESS CONFIGURATION
@@ -44,16 +26,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
+// static directory
+app.use(express.static('app/public'));
+
+
 // ================================================================================
 // ROUTER
 // The below points our server to a series of "route" files.
 // These routes give our server a "map" of how to respond when users visit or request data from various URLs.
 // ================================================================================
-app.get("/", function(req, res) {
-  res.json("HI");
-});
-
-
 
 // ==============================================================================
 // LISTENER
@@ -63,66 +44,82 @@ app.listen(PORT, function() {
   console.log("App listening on PORT: " + PORT);
 });
 
+// 1. GET(/) | User visits our webpage (GET request) ---> HTML Page loading (Asking Login Through Facebook)
 
-/*
+app.get("/", function(req, res) {
+    console.log("Grab Index")
+  res.sendFile(path.join(__dirname + '/app/public/startbootstrap-grayscale-gh-pages/index.html'));
+});
 
-1. GET(/) | User visits our webpage (GET request) ---> HTML Page loading (Asking Login Through Facebook)
+// 2. GENERIC AUTH STUFF (FILL IN LATER)
 
-2. GENERIC AUTH STUFF (FILL IN LATER)
+// 3. GET(/location) | User is shown a NEW HTML page that says: "You are X meters away from the location" + Clue #1
 
-3. GET(/location) | User is shown a NEW HTML page that says: "You are X meters away from the location" + Clue #1
 
-4. GET (/api/:user/cluenum) | Return a JSON that specifies "which clue" the user is currently seeking
-    
-    {
-        user_id: 12121313,
-        next_clue: 3,
-        next_clue_location: {
-            lat: 23,
-            lng: 12    
-        },
-        clue_message: "Find me at the club"
-    }
+app.get("/location", function(req, res) {
+    console.log("Check User Location")
+    res.sendFile(path.join(__dirname + '/app/public/startbootstrap-grayscale-gh-pages/index.html'));
+});
+// 4. GET (/api/:user/cluenum) | Return a JSON that specifies "which clue" the user is currently seeking
+app.get("/api/:user/cluenum", function(req, res) {
+    var userID = req.params.user;
+    console.log("API call")
+    orm.findClueNum(userID);
+    console.log(userInfo)
+    res.json(userInfo)
+});
+    // {
+    //     user_id: 12121313,
+    //     next_clue: 3,
+    //     next_clue_location: {
+    //         lat: 23,
+    //         lng: 12    
+    //     },
+    //     clue_message: "Find me at the club"
+    // }
 
     // Extra logic in here to handle if the next_clue is 999, in which case the user "Wins".
 
 
-5. POST (/api/clue_location) | User sends the server their current location + clue_number like the below:
+// 5. POST (/api/clue_location) | User sends the server their current location + clue_number like the below:
+app.post("/api/clue_location", function(req, res) {
+    
+    orm.checkDist()
+});
+    // {
+    //     clue_num: 3,
+    //     user_current_location: {
+    //         lat: 41
+    //         lng: 21
+    //     }
+    // } 
 
-    {
-        clue_num: 3,
-        user_current_location: {
-            lat: 41
-            lng: 21
-        }
-    } 
+    // Server return a JSON that says below (inside route exists the logic to calculate the distance)
 
-    Server return a JSON that says below (inside route exists the logic to calculate the distance)
+    // { 
+    //     user_current_location: {
+    //         lat: 41
+    //         lng: 21
+    //     },
 
-    { 
-        user_current_location: {
-            lat: 41
-            lng: 21
-        },
+    //     clue_location: {
+    //         lat: 23,
+    //         lng: 12
+    //     },
 
-        clue_location: {
-            lat: 23,
-            lng: 12
-        },
-
-        distance: 212
-    }
+    //     distance: 212
+    // }
 
     // If distance = 20 then change the user table and do some crazy stuff like redirect the user.
 
---------------------------
+// --------------------------
 
-USERS_TABLE
-USER_ID (FB) | Real Name | CLUE_NUM 
-1231312     | Ahmed Haque | 1 
+// USERS_TABLE
+// USER_ID (FB) | Real Name | CLUE_NUM 
+// 1231312     | Ahmed Haque | 1 
 
-CLUE_LOCATION_TABLE
-CLUE_NUM    | LAT   | LNG   | MESSAGE
-1           | 23    | 12    | "Find me at the club"
+// CLUE_LOCATION_TABLE
+// CLUE_NUM    | LAT   | LNG   | MESSAGE
+// 1           | 23    | 12    | "Find me at the club"
 
-*/
+// */  
