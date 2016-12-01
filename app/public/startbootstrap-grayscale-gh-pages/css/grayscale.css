@@ -11,7 +11,38 @@ body {
   background-color: black;
 }
 header{
+  margin-top: 2px;
   text-align: center;
+}
+.pclass{
+  font-size: 20px;
+  
+  text-align: center;
+}
+#about{
+  
+  margin-left: 5cm;
+  align-items: center;
+}
+.cuerpo{
+  background-image:url("../img/downloads-bg.jpg");
+  background-repeat: no-repeat;
+} 
+.brand-heading{
+  margin-top: 150px;
+}
+#store{
+  margin-top: 2cm;
+}
+.apple{
+  margin-right: 10cm;
+  width: 200px;
+  height: 80px;
+}
+.android{
+  margin-left: 10cm;
+  width: 200px;
+  height: 80px;
 }
 .lol{
   margin-left: 300px;
