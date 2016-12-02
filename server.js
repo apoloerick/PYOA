@@ -6,7 +6,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var path = require("path");
 var mysql = require('mysql');
-var orm = require('/config/orm.js');
+var orm = require('./config/orm.js');
 
 // ==============================================================================
 // EXPRESS CONFIGURATION
@@ -27,7 +27,7 @@ app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 // static directory
-app.use(express.static('app/public'));
+app.use(express.static('./app/public'));
 
 
 // ================================================================================
@@ -48,7 +48,7 @@ app.listen(PORT, function() {
 
 app.get("/", function(req, res) {
     console.log("Grab Index")
-  res.sendFile(path.join(__dirname + '/app/public/startbootstrap-grayscale-gh-pages/index.html'));
+  res.sendFile(path.join(__dirname + './app/public/startbootstrap-grayscale-gh-pages/index.html'));
 });
 
 // 2. GENERIC AUTH STUFF (FILL IN LATER)

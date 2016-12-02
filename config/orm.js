@@ -8,7 +8,7 @@ var orm = {
 		connection.query(querystring, function (err, result) {
 		var userClue = result;
 		})
-	};
+	}
 
 	// selectWhere: function (tableInput, colToSearch, valOfCol) {
 	// 	var queryString = 'SELECT * FROM ' + tableInput + ' WHERE ' + colToSearch + ' = ?';
